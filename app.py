@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 import time
+import random
 
 championList = ["Aatrox", "Illaoi", "Qiyana", "Ahri", "Irelia", "Quinn", "Akali", "Ivern", "Rakan", "Akshan", "Janna", "Rammus", "Alistar", "Jarvan IV", "Rek'Sai",
                 "Ambessa", "Jax", "Rell", "Amumu", "Jayce", "Renata Glasc", "Anivia", "Jhin", "Renekton", "Annie", "Jinx", "Rengar", "Aphelios", "Kai'Sa", "Riven",
-                "Ashe", "Kalista", "Rumble", "Aurelion Sol", "Karma", "Ryze", "Aurora", "Karthus", "Samira", "Azir", "Kassadin", "Sejuani", "Bard", "Katarina",
+                "Ashe", "Kalista", "Rumble", "Aurelion Sol", "Karma", "Ryze", "Aurora", "Kassadin", "Samira", "Azir", "Karthus", "Sejuani", "Bard", "Katarina",
                 "Senna", "Bel'Veth", "Kayle", "Seraphine", "Blitzcrank", "Kayn", "Sett", "Brand", "Kennen", "Shaco", "Braum", "Kha'Zix", "Shen", "Briar",
                 "Kindred", "Shyvana", "Caitlyn", "Kled", "Singed", "Camille", "Kog'Maw", "Sion", "Cassiopeia", "K'Sante", "Sivir", "Cho'Gath", "LeBlanc",
                 "Skarner", "Corki", "Lee Sin", "Smolder", "Darius", "Leona", "Sona", "Diana", "Lillia", "Soraka", "Dr. Mundo", "Lissandra", "Swain", "Draven",
@@ -36,9 +37,31 @@ bootItems = ["Mercury's Treads", "Plated Steelcaps", "Berserker's Greaves", "Sor
 starterItems = ["Doran's Shield", "Doran's Blade", "Cull", "Scorchclaw Pup", "Gustwalker Hatchling", "Mosstomper Seedling", "Doran's Ring", "Tear of the Goddess",
                 "World Atlas", "Dark Seal"]
 
-consumableItems = ["Refillable Potion", "Health Potion, Control Ward"]
+consumableItems = ["Refillable Potion", "Health Potion", "Control Ward"]
+
+# Filter out support-only legendary items
+excludedLegendaries = ["Celestial Opposition", "Dream Maker", "Zaz'Zak's Realmspike", "Solstice Sleigh", "Bloodsong"]
+filteredLegendaries = [item for item in legendaryItems if item not in excludedLegendaries]
 
 app = Flask(__name__)
+
+def get_starter_item(role):
+    if role == "jungle":
+        return random.choice(["Scorchclaw Pup", "Gustwalker Hatchling", "Mosstomper Seedling"])
+    elif role == "support":
+        return "World Atlas"
+    else:
+        lanerStarters = [item for item in starterItems if item not in ["Scorchclaw Pup", "Gustwalker Hatchling", "Mosstomper Seedling", "World Atlas"]]
+        return random.choice(lanerStarters)
+
+def get_consumable_item(role):
+    if role == "jungle":
+        return "Health Potion"
+    else:
+        return random.choice(consumableItems)
+
+def get_random_legendaries(count):
+    return random.sample(filteredLegendaries, min(count, len(filteredLegendaries)))
 
 @app.route('/')
 def index():
@@ -47,9 +70,37 @@ def index():
 @app.route('/button_action')
 def button_action():
     mouse_x = int(request.args.get('x', 0))
+    role = request.args.get('role', 'top')
     seconds = time.time()
-    index = (int(seconds) * mouse_x) % len(championList)
-    return jsonify({'Champion': championList[index]})
+    
+    # Randomize champion
+    champ_index = (int(seconds) * mouse_x) % len(championList)
+    champion = championList[champ_index]
+    
+    # Generate items based on role
+    starter = get_starter_item(role)
+    consumable = get_consumable_item(role)
+    
+    # First legendary item
+    first_legendary = random.choice(filteredLegendaries)
+    
+    # Boots
+    boots = random.choice(bootItems)
+    
+    # Additional legendary items (3 for support, 4 for others)
+    additional_count = 3 if role == "support" else 4
+    remaining_legendaries = [item for item in filteredLegendaries if item != first_legendary]
+    additional_legendaries = random.sample(remaining_legendaries, min(additional_count, len(remaining_legendaries)))
+    
+    return jsonify({
+        'Champion': champion,
+        'Role': role.capitalize(),
+        'StarterItem': starter,
+        'Consumable': consumable,
+        'FirstLegendary': first_legendary,
+        'Boots': boots,
+        'AdditionalLegendaries': additional_legendaries
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -9,34 +9,67 @@
 {% block body %}
 <div class="container">
     <h1 class="title">Champion Randomizer</h1>
-    <button id="champRandomizer" class="randomize-btn">Roll Champion</button>
+    
+    <div class="role-buttons">
+        <button class="role-btn" data-role="top">Top</button>
+        <button class="role-btn" data-role="jungle">Jungle</button>
+        <button class="role-btn" data-role="mid">Mid</button>
+        <button class="role-btn" data-role="bot">Bot</button>
+        <button class="role-btn" data-role="support">Support</button>
+    </div>
+    
     <div id="result" class="result"></div>
+    <div id="itemBuild" class="item-build"></div>
 </div>
 
 <script>
     let mouseX = 0;
+    let selectedRole = 'top';
     
     document.addEventListener('mousemove', function(e) {
         mouseX = e.clientX;
     });
     
-    document.getElementById('champRandomizer').addEventListener('click', function() {
-        const btn = this;
-        btn.disabled = true;
-        btn.textContent = 'Rolling...';
-        
-        fetch(`/button_action?x=${mouseX}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('result').textContent = data.Champion;
-                btn.disabled = false;
-                btn.textContent = 'Roll Champion';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                btn.disabled = false;
-                btn.textContent = 'Roll Champion';
-            });
+    const roleButtons = document.querySelectorAll('.role-btn');
+    roleButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            roleButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedRole = this.dataset.role;
+            
+            // Disable all buttons
+            roleButtons.forEach(b => b.disabled = true);
+            
+            fetch(`/button_action?x=${mouseX}&role=${selectedRole}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = data.Champion;
+                    
+                    const itemBuildHTML = `
+                        <div class="build-section">
+                            <div class="build-category">Role: ${data.Role}</div>
+                            <div class="build-category">Starter: ${data.StarterItem}</div>
+                            <div class="build-category">Consumable: ${data.Consumable}</div>
+                            <div class="build-category">First Item: ${data.FirstLegendary}</div>
+                            <div class="build-category">Boots: ${data.Boots}</div>
+                            <div class="build-category">Core Items:</div>
+                            <ul class="item-list">
+                                ${data.AdditionalLegendaries.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    document.getElementById('itemBuild').innerHTML = itemBuildHTML;
+                    
+                    roleButtons.forEach(b => b.disabled = false);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    roleButtons.forEach(b => b.disabled = false);
+                });
+        });
     });
+    
+    // Set default active role
+    document.querySelector('[data-role="top"]').classList.add('active');
 </script>
 {% endblock %}
