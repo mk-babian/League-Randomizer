@@ -13,4 +13,4 @@ A simple web application built with **Python**, **Flask**, **HTML**, and **CSS**
 
 ### Prerequisites
 
-None, just visit the webiste: https://league-randomizer.onrender.com/
+None, just visit the freely hosted webiste using Render: https://league-randomizer.onrender.com/
