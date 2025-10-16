@@ -1,0 +1,111 @@
+@font-face {
+    font-family: 'LeagueLight';
+    src: url('../fonts/BeaufortforLOL-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'LeagueRegular';
+    src: url('../fonts/BeaufortforLOL-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'LeagueMedium';
+    src: url('../fonts/BeaufortforLOL-Medium.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'LeagueHeavy';
+    src: url('../fonts/BeaufortforLOL-Heavy.otf') format('opentype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: LeagueHeavy, sans-serif;
+    background: linear-gradient(135deg, #0a1428 0%, #1e2328 50%, #0a1428 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f0e6d2;
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+    background: rgba(5, 10, 15, 0.6);
+    border: 2px solid #785a28;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    min-width: 400px;
+}
+
+.title {
+    font-size: 2.5rem;
+    color: #c8aa6e;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.randomize-btn {
+    font-family: LeagueHeavy, sans-serif;
+    font-size: 1.2rem;
+    padding: 15px 40px;
+    background: linear-gradient(180deg, #c8aa6e 0%, #8b7239 100%);
+    color: #0a1428;
+    border: 2px solid #785a28;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(200, 170, 110, 0.3);
+}
+
+.randomize-btn:hover {
+    background: linear-gradient(180deg, #f0e6d2 0%, #c8aa6e 100%);
+    box-shadow: 0 6px 20px rgba(200, 170, 110, 0.5);
+    transform: translateY(-2px);
+}
+
+.randomize-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(200, 170, 110, 0.3);
+}
+
+.randomize-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.result {
+    margin-top: 40px;
+    font-size: 3rem;
+    color: #c8aa6e;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

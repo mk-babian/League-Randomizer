@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<head>
+    <title>League of Legends Randomizer</title>
+</head>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="title">Champion Randomizer</h1>
+    <button id="champRandomizer" class="randomize-btn">Roll Champion</button>
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    let mouseX = 0;
+    
+    document.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+    });
+    
+    document.getElementById('champRandomizer').addEventListener('click', function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Rolling...';
+        
+        fetch(`/button_action?x=${mouseX}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').textContent = data.Champion;
+                btn.disabled = false;
+                btn.textContent = 'Roll Champion';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.disabled = false;
+                btn.textContent = 'Roll Champion';
+            });
+    });
+</script>
+{% endblock %}
